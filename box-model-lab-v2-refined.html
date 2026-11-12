@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Box Model &amp; Display Lab (Refined)</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;padding:20px;background:#f4f6f8;color:#222}
+h1{font-size:1.3rem;margin:0 0 12px}
+.wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.panel{background:#fff;padding:16px;border-radius:8px;width:320px;box-shadow:0 1px 4px #0002}
+.group{border-top:1px solid #ddd;padding-top:8px;margin-top:8px}.group h2{font-size:.9rem;margin:0 0 6px}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.85rem}
+.row label{width:84px}.row input{flex:1}.row output{width:44px;text-align:right;font-variant-numeric:tabular-nums}
+select{flex:1;padding:4px}
+#stage{position:relative;flex:1;min-width:340px;background:#fff;padding:50px;border-radius:8px;box-shadow:0 1px 4px #0002;line-height:1.2}
+#box1{position:relative;z-index:1;box-sizing:content-box;border-style:solid;border-color:#1c3d5a;font-weight:600;
+ background-image:linear-gradient(#ffd166,#ffd166),linear-gradient(#74c0fc,#74c0fc);
+ background-clip:content-box,padding-box;background-origin:content-box,padding-box}
+#box2{position:relative;z-index:1;display:inline-block;width:120px;height:60px;background:#b197fc;color:#fff;box-sizing:border-box;padding:8px}
+#mo{position:absolute;z-index:0;background:rgba(255,160,122,.55);pointer-events:none}
+.legend span{display:inline-block;padding:2px 8px;margin:0 6px 6px 0;border-radius:4px;font-size:.8rem}
+</style></head><body>
+<h1>CSS Box Model &amp; Display Lab (side-specific controls)</h1>
+<div class="wrap">
+<div class="panel" id="panel">
+ <div class="row"><label for="wid">Width</label><input id="wid" type="range" min="40" max="400" value="160"><output></output></div>
+ <div class="row"><label for="rad">Corner radius</label><input id="rad" type="range" min="0" max="60" value="0"><output></output></div>
+ <div class="row"><label for="disp">Display</label><select id="disp"><option>block</option><option>inline-block</option><option>inline</option></select></div>
+ <div class="legend"><span style="background:#ffd166">Content</span><span style="background:#74c0fc">Padding</span><span style="background:#1c3d5a;color:#fff">Border</span><span style="background:#ffa07a">Margin</span></div>
+</div>
+<div id="stage"><div id="mo"></div><div id="box1">Box 1</div><div id="box2">Box 2</div></div>
+</div>
+<script>
+const b=document.getElementById('box1'),mo=document.getElementById('mo'),st=document.getElementById('stage'),panel=document.getElementById('panel');
+const sides=['top','right','bottom','left'];
+[['margin','Margin',20,80],['padding','Padding',20,80],['border','Border',8,30]].forEach(([k,label,v,max])=>{
+ const g=document.createElement('div');g.className='group';g.innerHTML='<h2>'+label+'</h2>';
+ sides.forEach(s=>{const r=document.createElement('div');r.className='row';
+  r.innerHTML='<label for="'+k+s+'">'+s+'</label><input id="'+k+s+'" data-prop="'+k+'" data-side="'+s+'" type="range" min="0" max="'+max+'" value="'+v+'"><output></output>';
+  g.appendChild(r)});
+ panel.appendChild(g);
+});
+const val=id=>+document.getElementById(id).value;
+function update(){
+ sides.forEach(s=>{
+  const c=s[0].toUpperCase()+s.slice(1);
+  b.style['margin'+c]=val('margin'+s)+'px';
+  b.style['padding'+c]=val('padding'+s)+'px';
+  b.style['border'+c+'Width']=val('border'+s)+'px';
+ });
+ b.style.width=val('wid')+'px';b.style.borderRadius=val('rad')+'px';
+ b.style.display=document.getElementById('disp').value;
+ document.querySelectorAll('output').forEach(o=>{o.textContent=o.previousElementSibling.value+'px'});
+ /* margin overlay: drawn from the real box rect; inline boxes ignore vertical margins */
+ const inl=b.style.display==='inline',r=b.getBoundingClientRect(),s=st.getBoundingClientRect();
+ const mt=inl?0:val('margintop'),mb=inl?0:val('marginbottom'),ml=val('marginleft'),mr=val('marginright');
+ mo.style.left=(r.left-s.left-ml)+'px';mo.style.top=(r.top-s.top-mt)+'px';
+ mo.style.width=(r.width+ml+mr)+'px';mo.style.height=(r.height+mt+mb)+'px';
+}
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',update));
+window.addEventListener('resize',update);update();
+</script></body></html>

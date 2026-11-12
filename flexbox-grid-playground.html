@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Flexbox &amp; Grid Playground</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;padding:20px;background:#f4f6f8;color:#222}
+h1{font-size:1.3rem;margin:0 0 12px}
+.controls{display:flex;flex-wrap:wrap;gap:14px;background:#fff;padding:14px;border-radius:8px;box-shadow:0 1px 4px #0002;margin-bottom:16px}
+.controls label{display:flex;flex-direction:column;font-size:.8rem;gap:4px}
+select{padding:5px;min-width:140px}
+#container{min-height:320px;background:#fff;border:2px dashed #4c6ef5;border-radius:8px;padding:10px;gap:10px}
+.item{background:#4c6ef5;color:#fff;font-weight:700;padding:14px 20px;border-radius:6px;text-align:center}
+.item:nth-child(2){height:90px}.item:nth-child(4){height:60px}.item:nth-child(3){padding:30px 20px}
+pre{background:#212529;color:#d3f9d8;padding:12px;border-radius:8px;font-size:.85rem;overflow:auto}
+.hint{font-size:.8rem;color:#555}
+</style></head><body>
+<h1>CSS Flexbox &amp; Grid Playground</h1>
+<div class="controls">
+ <label>display<select id="display"><option>block</option><option selected>flex</option><option>grid</option></select></label>
+ <label>flex-direction<select id="flexDirection"><option>row</option><option>column</option></select></label>
+ <label>justify-content<select id="justifyContent"><option>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select></label>
+ <label>align-items<select id="alignItems"><option>stretch</option><option>flex-start</option><option>center</option><option>flex-end</option></select></label>
+ <label>grid-template-columns<select id="gridTemplateColumns"><option>1fr 1fr</option><option>1fr 1fr 1fr</option><option>2fr 1fr</option><option>repeat(5, 1fr)</option></select></label>
+</div>
+<p class="hint">flex-direction applies in flex mode; grid-template-columns applies in grid mode; block ignores both.</p>
+<div id="container"><div class="item">1</div><div class="item">2</div><div class="item">3</div><div class="item">4</div><div class="item">5</div></div>
+<pre id="code"></pre>
+<script>
+const c=document.getElementById('container'),ids=['display','flexDirection','justifyContent','alignItems','gridTemplateColumns'];
+const css=p=>p.replace(/[A-Z]/g,m=>'-'+m.toLowerCase());
+function update(){
+ let out='#container {\n';
+ ids.forEach(id=>{const v=document.getElementById(id).value;c.style[id]=v;out+='  '+css(id)+': '+v+';\n'});
+ document.getElementById('code').textContent=out+'}';
+}
+ids.forEach(id=>document.getElementById(id).addEventListener('change',update));
+update();
+</script></body></html>
